@@ -75,47 +75,77 @@
   </main>
 
   <script>
-    const WEBHOOK_URL = 'https://truongmaiquochoang.app.n8n.cloud/webhook/expense-analyzer';
-    const dateInput = document.getElementById('date');
-    dateInput.valueAsDate = new Date();
+  const WEBHOOK_URL = 'https://truongmaiquochoang.app.n8n.cloud/webhook/expense-analyzer';
+  const dateInput = document.getElementById('date');
+  const statusText = document.getElementById('statusText');
 
-    document.getElementById('submitBtn').addEventListener('click', function () {
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const income = document.getElementById('income').value;
-      const saving_goal = document.getElementById('saving_goal').value;
-      const date = dateInput.value;
-      const budget = document.getElementById('budget').value;
-      const expenseText = document.getElementById('expenseText').value.trim();
+  // 1. Chặn ngày tương lai: Thiết lập thuộc tính max là ngày hôm nay
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  const todayStr = `${yyyy}-${mm}-${dd}`;
+  
+  dateInput.max = todayStr; // Người dùng không thể chọn ngày sau hôm nay
+  dateInput.value = todayStr;
 
-      if (!name || !email || !expenseText || !budget || !income) {
-        document.getElementById('statusText').textContent = 'Vui lòng điền các thông tin quan trọng.';
-        return;
-      }
+  document.getElementById('submitBtn').addEventListener('click', function () {
+    const nameInput = document.getElementById('name').value.trim();
+    const emailInput = document.getElementById('email').value.trim();
+    const income = document.getElementById('income').value;
+    const saving_goal = document.getElementById('saving_goal').value;
+    const date = dateInput.value;
+    const budget = document.getElementById('budget').value;
+    const expenseText = document.getElementById('expenseText').value.trim();
 
-      const today = new Date();
-const currentDay = today.getDate();
-const totalDays = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    // 2. Ràng buộc Họ tên: Chỉ cho phép chữ cái (bao gồm tiếng Việt có dấu) và khoảng trắng
+    const nameRegex = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÂÊÔƠƯ \s]+$/;
+    
+    // 3. Ràng buộc Email: Kiểm tra định dạng email chuẩn
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const payload = {
-  Name: name,
-  Email: email,
-  Income: Number(income),
-  Saving_Goal: Number(saving_goal) || 0,
-  Date: date,
-  Monthly_Budget: Number(budget),
-  Expense_Text: expenseText,
-  Record_ID: 'EXP' + Date.now(),
+    // KIỂM TRA LỖI
+    if (!nameInput || !emailInput || !expenseText || !budget || !income) {
+      statusText.textContent = 'Vui lòng điền đầy đủ các thông tin.';
+      return;
+    }
 
-  // ✅ THÊM 2 DÒNG QUAN TRỌNG
-  Current_Day: currentDay,
-  Total_Days: totalDays
-};
+    if (!nameRegex.test(nameInput)) {
+      statusText.textContent = 'Họ tên không hợp lệ (chỉ được chứa chữ cái).';
+      return;
+    }
 
-// giữ nguyên flow cũ
-localStorage.setItem('expense_input', JSON.stringify(payload));
-window.location.href = 'KQ.html';
-    });
-  </script>
+    if (!emailRegex.test(emailInput)) {
+      statusText.textContent = 'Email không đúng định dạng.';
+      return;
+    }
+
+    if (new Date(date) > today) {
+      statusText.textContent = 'Ngày giao dịch không thể ở tương lai.';
+      return;
+    }
+
+    // Nếu mọi thứ ổn, tiến hành gửi dữ liệu
+    statusText.textContent = ''; // Xóa thông báo lỗi
+    const currentDay = today.getDate();
+    const totalDays = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+
+    const payload = {
+      Name: nameInput.toLowerCase(),
+      Email: emailInput.toLowerCase(),
+      Income: Number(income),
+      Saving_Goal: Number(saving_goal) || 0,
+      Date: date,
+      Monthly_Budget: Number(budget),
+      Expense_Text: expenseText,
+      Record_ID: 'EXP' + Date.now(),
+      Current_Day: currentDay,
+      Total_Days: totalDays
+    };
+
+    localStorage.setItem('expense_input', JSON.stringify(payload));
+    window.location.href = 'KQ.html';
+  });
+</script>
 </body>
 </html>

@@ -2,163 +2,165 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Kết quả phân tích chi tiêu</title>
+  <title>Phân Tích Tài Chính Chi Tiết</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body { margin: 0; font-family: Arial, sans-serif; background: #f4f7fb; color: #172033; }
     .page { width: min(1000px, calc(100% - 32px)); margin: auto; padding: 30px 0; }
     .card { background: #fff; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-    .header-flex { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
-    h1 { margin: 0; font-size: 24px; color: #1e293b; }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
-    
     .metric-box { display: flex; flex-wrap: wrap; gap: 15px; }
     .metric { background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; min-width: 150px; flex: 1; }
     .metric label { font-size: 13px; color: #64748b; display: block; margin-bottom: 5px; }
     .metric b { font-size: 18px; color: #0f172a; }
-
-    .highlight-card { background: #1e293b; color: #fff; padding: 20px; border-radius: 12px; height: fit-content; }
-    .advice-section { border-left: 4px solid #3b82f6; padding-left: 15px; margin-top: 15px; }
-    .warning-section { border-left: 4px solid #ef4444; padding-left: 15px; margin-top: 15px; color: #fca5a5; }
-
-    .item-list { margin-top: 20px; }
-    .item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; align-items: center; }
-    .tag { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; margin-right: 5px; text-transform: uppercase; }
-    .eat { background: #dcfce7; color: #166534; }
-    .study { background: #dbeafe; color: #1e40af; }
-    .fun { background: #fef9c3; color: #854d0e; }
-    .other { background: #f1f5f9; color: #475569; }
-    
-    #loading { text-align: center; padding: 100px; font-size: 18px; font-weight: bold; }
-    .btn-back { padding: 8px 16px; border-radius: 6px; border: 1px solid #ccc; background: white; cursor: pointer; }
+    .highlight-card { background: #1e293b; color: #fff; padding: 20px; border-radius: 12px; }
+    .item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+    #loading { text-align: center; padding: 50px; font-size: 20px; }
+    h3 { margin-top: 0; color: #1e293b; font-size: 18px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 15px; }
   </style>
 </head>
 <body>
   <div class="page">
-    <div id="loading"> AI đang phân tích dữ liệu và dự báo...</div>
-    
+    <div id="loading">AI đang tổng hợp dữ liệu lịch sử...</div>
     <div id="mainContent" style="display:none;">
-      <div class="header-flex">
-        <h1>📊 Phân Tích Tài Chính</h1>
-        <button class="btn-back" onclick="window.location.href='AI.html'">Quay lại nhập liệu</button>
-      </div>
-
+      <h1>📊 Dashboard Tài Chính</h1>
+      
       <div class="grid">
         <div class="metric-box">
-    <div class="metric">
-        <label>Tổng chi hôm nay</label>
-        <b id="todayTotal">0đ</b>
-    </div>
-    <div class="metric">
-        <label>Trạng thái ngân sách</label>
-        <b id="statusText">--</b>
-    </div>
-    <div class="metric">
-        <label>Dự báo chi cuối tháng</label>
-        <b id="prediction">0đ</b>
-    </div>
-    <div class="metric">
-        <label>Nhóm chi chính</label>
-        <b id="mainCategory">--</b>
-    </div>
-    <!-- Hai ô mới cùng định dạng với các ô trên -->
-    <div class="metric" style="border-top: 3px solid #3b82f6;">
-        <label>Tổng chi tuần này</label>
-        <b id="weeklyTotal" style="color: #2563eb;">0đ</b>
-    </div>
-    <div class="metric" style="border-top: 3px solid #a855f7;">
-        <label>Tổng chi tháng này</label>
-        <b id="monthlyTotal" style="color: #7c3aed;">0đ</b>
-    </div>
-</div>
-
+          <div class="metric"><label>Hôm nay</label><b id="todayTotal">0đ</b></div>
+          <div class="metric"><label>Trạng thái</label><b id="statusText">--</b></div>
+          <div class="metric"><label>Dự báo cuối tháng</label><b id="prediction">0đ</b></div>
+          <div class="metric"><label>Nhóm chi chính</label><b id="mainCategory">--</b></div>
+          <div class="metric" style="border-top: 3px solid #3b82f6;"><label>Tuần này</label><b id="weeklyTotal">0đ</b></div>
+          <div class="metric" style="border-top: 3px solid #a855f7;"><label>Tháng này</label><b id="monthlyTotal">0đ</b></div>
+        </div>
         <div class="highlight-card">
           <h3>🔮 Gợi ý từ AI</h3>
-          <div class="advice-section">
-            <p id="smartAdvice">AI đang soạn lời khuyên cho bạn...</p>
-          </div>
-          <div class="warning-section" id="warningBox" style="display:none;">
-            <b>🚨 Cảnh báo chi tiêu:</b> <br>
-            <span id="warningText"></span>
-          </div>
+          <p id="smartAdvice"></p>
         </div>
       </div>
 
-      <div class="card item-list">
-        <h3>📝 Danh sách chi tiết bóc tách từ văn bản</h3>
-        <div id="itemsContainer"></div>
+      <div class="grid" style="margin-top: 20px;">
+        <div class="card"><h3>🍕 Phân bổ hôm nay</h3><canvas id="categoryChart"></canvas></div>
+        <div class="card"><h3>📊 Xu hướng chi tiêu</h3><canvas id="trendChart"></canvas></div>
+      </div>
+
+      <div class="grid">
+        <!-- Card bên trái: Chi tiết vừa nhập -->
+        <div class="card">
+          <h3>📝 Chi tiết hôm nay</h3>
+          <div id="itemsContainer"></div>
+        </div>
+        
+        <!-- Card bên phải: Lịch sử ngày trước -->
+        <div class="card">
+          <h3>📅 Lịch sử các ngày trước</h3>
+          <div id="historyContainer">
+            <p style="text-align: center; color: #64748b; padding: 20px;">Đang tải lịch sử...</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
-    async function analyze() {
-      const input = JSON.parse(localStorage.getItem('expense_input'));
-      if (!input) {
-          document.getElementById('loading').textContent = 'Không tìm thấy dữ liệu đầu vào. Vui lòng quay lại.';
-          return;
-      }
-
-      try {
-        const response = await fetch('https://truongmaiquochoang.app.n8n.cloud/webhook/expense-analyzer', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(input)
+    function drawCharts(data) {
+        const items = JSON.parse(data.Items_JSON || '[]');
+        const catMap = {};
+        items.forEach(i => {
+            const cat = i.category || 'Khác';
+            catMap[cat] = (catMap[cat] || 0) + (Number(i.amount) || 0);
         });
 
-       const data = await response.json();
-document.getElementById('loading').style.display = 'none';
-document.getElementById('mainContent').style.display = 'block';
+        new Chart(document.getElementById('categoryChart'), {
+            type: 'doughnut',
+            data: { 
+                labels: Object.keys(catMap), 
+                datasets: [{ 
+                    data: Object.values(catMap), 
+                    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'] 
+                }] 
+            }
+        });
 
-// Hiển thị các Metric (Dùng đúng tên trường từ Prompt AI)
-document.getElementById('todayTotal').textContent = (data.Today_Total || 0).toLocaleString() + 'đ';
-document.getElementById('statusText').textContent = data.Budget_Status || '--';
-document.getElementById('prediction').textContent = (data.Prediction || 0).toLocaleString() + 'đ';
-document.getElementById('mainCategory').textContent = data.Category || 'Khác';
+        new Chart(document.getElementById('trendChart'), {
+            type: 'bar',
+            data: { 
+                labels: ['Hôm nay', 'Tuần', 'Tháng'], 
+                datasets: [{ 
+                    label: 'VNĐ', 
+                    data: [
+                        Number(data.Today_Total) || 0, 
+                        Number(data.Weekly_Total) || 0, 
+                        Number(data.Monthly_Total) || 0
+                    ], 
+                    backgroundColor: ['#1e293b', '#3b82f6', '#a855f7'] 
+                }] 
+            },
+            options: { scales: { y: { beginAtZero: true } } }
+        });
+    }
 
-// Hiển thị dữ liệu tuần và tháng
-const weekly = data.Weekly_Total || 0;
-const monthly = data.Monthly_Total || 0;
-document.getElementById('weeklyTotal').innerText = weekly.toLocaleString() + 'đ';
-document.getElementById('monthlyTotal').innerText = monthly.toLocaleString() + 'đ';
-// Hiển thị Lời khuyên và Cảnh báo (Sửa từ .Advice thành .Smart_Advice)
-document.getElementById('smartAdvice').textContent = data.Smart_Advice || 'Hãy tiếp tục theo dõi chi tiêu mỗi ngày nhé!';
-        
-        if (data.Warning) {
-          document.getElementById('warningBox').style.display = 'block';
-          document.getElementById('warningText').textContent = data.Warning;
+    async function analyze() {
+        const inputStr = localStorage.getItem('expense_input');
+        if (!inputStr) {
+            document.getElementById('loading').innerText = "Vui lòng nhập liệu trước!";
+            return;
         }
 
-        // Hiển thị Items
-        const items = JSON.parse(data.Items_JSON || '[]');
-        const container = document.getElementById('itemsContainer');
-        container.innerHTML = ''; // Clear cũ
-        
-        items.forEach(item => {
-          const div = document.createElement('div');
-          div.className = 'item';
-          div.innerHTML = `
-            <div>
-              <b>${item.name}</b><br>
-              <span class="tag ${getCatClass(item.category)}">${item.category}</span>
-            </div>
-            <b>${Number(item.amount).toLocaleString()}đ</b>
-          `;
-          container.appendChild(div);
-        });
+        try {
+            const response = await fetch('https://truongmaiquochoang.app.n8n.cloud/webhook/expense-analyzer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: inputStr
+            });
+            
+            const data = await response.json();
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
 
-      } catch (e) {
-        document.getElementById('loading').textContent = 'Lỗi kết nối AI: ' + e.message;
-      }
+            // 1. Cập nhật các con số tổng quát
+            document.getElementById('todayTotal').innerText = (data.Today_Total || 0).toLocaleString() + 'đ';
+            document.getElementById('weeklyTotal').innerText = (data.Weekly_Total || 0).toLocaleString() + 'đ';
+            document.getElementById('monthlyTotal').innerText = (data.Monthly_Total || 0).toLocaleString() + 'đ';
+            document.getElementById('statusText').innerText = data.Budget_Status || '--';
+            document.getElementById('prediction').innerText = (data.Prediction || 0).toLocaleString() + 'đ';
+            document.getElementById('mainCategory').innerText = data.Category || 'Khác';
+            document.getElementById('smartAdvice').innerText = data.Smart_Advice || 'Dữ liệu đang được phân tích...';
+
+            // 2. Hiển thị chi tiết hôm nay
+            const items = JSON.parse(data.Items_JSON || '[]');
+            const container = document.getElementById('itemsContainer');
+            container.innerHTML = ''; 
+            items.forEach(item => {
+                container.innerHTML += `<div class="item"><span>${item.name}</span><b>${(Number(item.amount) || 0).toLocaleString()}đ</b></div>`;
+            });
+
+            // 3. ✅ HIỂN THỊ LỊCH SỬ CÁC NGÀY TRƯỚC
+            const historyList = JSON.parse(data.History_List || '[]');
+            const historyContainer = document.getElementById('historyContainer');
+            historyContainer.innerHTML = ''; 
+
+            if (historyList.length === 0) {
+                historyContainer.innerHTML = '<p style="color: #64748b; text-align: center; padding: 20px;">Chưa có dữ liệu lịch sử.</p>';
+            } else {
+                historyList.forEach(rec => {
+                    historyContainer.innerHTML += `
+                        <div class="item" style="border-left: 4px solid #cbd5e1; padding-left: 10px; margin-bottom: 10px; align-items: center;">
+                            <div style="flex: 1;">
+                                <small style="color: #64748b; font-size: 11px;">${rec.date} • ${rec.category}</small>
+                                <div style="font-weight: 500; color: #334155;">${rec.content}</div>
+                            </div>
+                            <b style="color: #1e293b;">${(Number(rec.amount) || 0).toLocaleString()}đ</b>
+                        </div>`;
+                });
+            }
+            
+            drawCharts(data);
+        } catch (e) {
+            document.getElementById('loading').innerText = "Lỗi kết nối hệ thống: " + e.message;
+        }
     }
-
-    function getCatClass(cat) {
-      if (cat === 'Ăn uống') return 'eat';
-      if (cat === 'Học tập') return 'study';
-      if (cat === 'Giải trí') return 'fun';
-      return 'other';
-    }
-
     analyze();
   </script>
 </body>
